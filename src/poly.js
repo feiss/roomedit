@@ -1,4 +1,4 @@
-AFRAME.registerComponent('pointer', {
+AFRAME.registerComponent('poly', {
   schema: {
   },
   init: function () {

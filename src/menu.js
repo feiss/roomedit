@@ -3,14 +3,36 @@ AFRAME.registerComponent('menu', {
   },
   init: function() {
     this.el.addEventListener('trackpaddown', this.onTrackpadDown.bind(this));
-    this.currentTool = null;
-    this.tools = ['extruder', 'sphere'];
+    this.currentToolIdx = 0;
+    this.currentTool = null; // reference to current tool component
   },
   
   onTrackpadDown: function(ev) {
-      console.log(ev);
-      this.currentTool = (this.currentTool + 1) % this.tools.length;
-      document.getElementById('pointer').getAttribute('pointer').setTool(this.tools[this.currentTool]);
-  }
+      this.currentToolIdx = (this.currentToolIdx + 1) % ROOMEDIT.tools.length;
+      this.setTool(ROOMEDIT.tools[this.currentToolIdx]);
+  },
+
+  setTool: function (toolname) {
+    var pointer = document.getElementById('pointer');
+    this.tool.done(false);
+    pointer.el.removeAttribute(this.currentTool.name);
+    pointer.el.setAttribute(toolname, '');
+    this.tool = this.el.getAttribute(toolname);
+    this.tool.name = toolname;
+  },
+
 
 });
+
+
+ROOMEDIT = {
+  tools : [],
+  registerTool : function(tool) {
+    if (this.tools[tool.name] !== undefined) {
+      console.warn(tool.name + ' is already registered');
+      return;
+    }
+    this.tools[tool.name] = tool;
+    console.info('Tool ' + tool.name + ' registered');
+  }
+};
