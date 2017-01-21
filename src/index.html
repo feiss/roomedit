@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Room Edit</title>
+  <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
+  <script src="menu.js"></script>
+  <script src="pointer.js"></script>
+  <style>
+  #output{
+    background: #222;
+    color: #999;
+    font: 10px sans-serif;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  </style>
+</head>
+<body>
+<a-scene>
+  <a-entity id="menu" vive-controls="hand: left" menu></a-entity>
+  <a-entity id="pointer" vive-controls="hand: right" pointer></a-entity>
+  <a-plane height="2" width="2" rotation="-90 0 0" color="#543"></a-plane>
+  <a-sky color="#111"></a-sky>
+</a-scene>
+<textarea id="output" cols="30" rows="10"></textarea>
+
+<script type="text/javascript">
+
+window.addEventListener('keydown', function(ev) {
+  if (ev.keyCode == 86) {
+    saveRoom();
+  }
+});
+
+function saveRoom () {
+
+  var items = document.querySelectorAll('.roomItem');
+  var data = {objects:[]};
+  for (var i = 0; i < items.length; i++){
+    data.objects.push(items[i].points);
+  }
+
+  var output = document.getElementById('output');
+  var header = 'javascript:R=';
+  var footer = ';';
+  output.value = header + JSON.stringify(data) + footer; 
+  output.style.display = 'block';
+}
+
+</script>
+</body>
+</html>
