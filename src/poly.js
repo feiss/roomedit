@@ -1,29 +1,23 @@
 AFRAME.registerComponent('poly', {
   schema: {
+    sides: {default:4}
   },
   init: function () {
-    this.el.addEventListener('triggerdown', this.onTriggerDown.bind(this));
-    this.el.addEventListener('gripdown', this.onGripDown.bind(this));
-
     this.points = [];
     this.helpers = [];
     this.model = null;
     this.plane = null;
   },
 
-  setTool: function (toolname) {
-    this.tool.done(false);
-    this.el.removeAttribute(this.tool.name);
-    this.el.setAttribute(toolname, '');
-    this.tool = this.el.getAttribute(toolname);
-    this.tool.name = toolname;
+  play: function (ev) {
+    this.el.addEventListener('triggerdown', this.onTriggerDown.bind(this));
+  },
+  pause: function (ev) {
+    this.el.removeEventListener('triggerdown', this.onTriggerDown.bind(this));
   },
 
   onTriggerDown: function (ev) {
 
-    this.emit('onTriggerDown');
-    return;
-    
     var pos = this.el.getAttribute('position');
 
     if (this.points.length == 8){
@@ -69,10 +63,6 @@ AFRAME.registerComponent('poly', {
     this.model = null;
   },
 
-  onGripDown: function(ev) {
-    this.done(false);
-  },
-
   addHelper: function(pos) {
     var helper = document.createElement('a-sphere');
     helper.setAttribute('color', '#888');
@@ -83,7 +73,6 @@ AFRAME.registerComponent('poly', {
   },
 
   updateModel: function() {
-    console.log('puntos', this.points.length);
     if (this.model !== null) {
       this.model.parentNode.removeChild(this.model);
     }
@@ -158,3 +147,9 @@ AFRAME.registerComponent('poly', {
     this.points[3].z = this.points[0].z + this.points[2].z - this.points[1].z;
   }
 });
+
+ROOMEDIT.registerTool({name:'poly', params:{n:2}});
+ROOMEDIT.registerTool({name:'poly', params:{n:3}});
+ROOMEDIT.registerTool({name:'poly', params:{n:4}});
+ROOMEDIT.registerTool({name:'poly', params:{n:5}});
+ROOMEDIT.registerTool({name:'poly', params:{n:6}});

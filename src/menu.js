@@ -1,24 +1,47 @@
 AFRAME.registerComponent('menu', {
-  schema: {
-  },
+  schema: {},
   init: function() {
     this.el.addEventListener('trackpaddown', this.onTrackpadDown.bind(this));
-    this.currentToolIdx = 0;
-    this.currentTool = null; // reference to current tool component
+    this.currentToolIdx = undefined;
+    this.defaultMaterial = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color: 0x666666});
+    var self = this;
+    this.el.sceneEl.addEventListener('loaded', function (ev) {
+      self.setTool(ROOMEDIT.defaultTool);
+    });
   },
   
-  onTrackpadDown: function(ev) {
-      this.currentToolIdx = (this.currentToolIdx + 1) % ROOMEDIT.tools.length;
-      this.setTool(ROOMEDIT.tools[this.currentToolIdx]);
+  getTool: function () {
+    var tool = ROOMEDIT.tools[this.currentToolIdx];
+    return document.getElementById('pointer').components[tool.name];
   },
 
-  setTool: function (toolname) {
+  onTrackpadDown: function (ev) {
+      var newToolIdx= (this.currentToolIdx + 1) % ROOMEDIT.tools.length;
+      this.setTool(newToolIdx);
+  },
+
+  onGripDown: function (ev) {
+    if (this.currentToolIdx === undefined) { return; }
+    var tool = this.getTool();
+    if (tool && tool['done']) {
+      tool.done(false);
+    }
+  },
+
+  setTool: function (idx) {
     var pointer = document.getElementById('pointer');
-    this.tool.done(false);
-    pointer.el.removeAttribute(this.currentTool.name);
-    pointer.el.setAttribute(toolname, '');
-    this.tool = this.el.getAttribute(toolname);
-    this.tool.name = toolname;
+    if (this.currentToolIdx !== undefined) {
+      var oldTool = ROOMEDIT.tools[this.currentToolIdx];
+      var oldComponent = pointer.components[oldTool.name];
+      if (oldComponent && oldComponent['done']) {
+        oldComponent.done(false);
+      }
+      pointer.removeAttribute(oldTool.name);
+    }
+    var newTool = ROOMEDIT.tools[idx];
+    pointer.setAttribute(newTool.name, newTool.params || '');
+    pointer.components[newTool.name].material = this.defaultMaterial;
+    this.currentToolIdx = idx;
   },
 
 
@@ -26,13 +49,10 @@ AFRAME.registerComponent('menu', {
 
 
 ROOMEDIT = {
-  tools : [],
-  registerTool : function(tool) {
-    if (this.tools[tool.name] !== undefined) {
-      console.warn(tool.name + ' is already registered');
-      return;
-    }
-    this.tools[tool.name] = tool;
+  tools: [],
+  defaultTool: 0,
+  registerTool: function(tool) {
+    this.tools.push(tool);
     console.info('Tool ' + tool.name + ' registered');
   }
 };

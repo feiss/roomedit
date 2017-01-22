@@ -5,8 +5,8 @@
   <title>Room Edit</title>
   <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
   <script src="menu.js"></script>
-  <script src="pointer.js"></script>
   <script src="sphere.js"></script>
+  <script src="poly.js"></script>
   <style>
   #output{
     background: #222;
@@ -21,7 +21,7 @@
 </head>
 <body>
 <a-scene>
-  <a-entity id="menu" vive-controls="hand: left" menu></a-entity>
+  <a-entity id="menu" menu vive-controls="hand: left"></a-entity>
   <a-entity id="pointer" vive-controls="hand: right"></a-entity>
   <a-plane height="2" width="2" rotation="-90 0 0" color="#543"></a-plane>
   <a-sky color="#111"></a-sky>
